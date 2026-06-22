@@ -541,7 +541,11 @@ function renderChart() {
 
 // --- 6. SEGURANÇA E BACKUP (EXPORTAÇÃO/IMPORTAÇÃO MESCLADA) ---
 function exportData() {
+    // Aqui garantimos que estamos pegando o objeto 'db' completo,
+    // que já contém o array 'records' com todos os tipos (morion e avulso)
+    // e todos os campos (diamonds, diamondsBruto, itemName, etc).
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+    
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", `nightcrows_backup_${new Date().toISOString().slice(0,10)}.json`);
