@@ -571,40 +571,23 @@ function importData(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
-            const imported = JSON.parse(e.target.result);
-            if(imported.records && Array.isArray(imported.records)) {
-                
-                if (imported.goal) {
-                    db.goal = imported.goal;
-                }
-
-                imported.records.forEach(newRecord => {
-                    const existingIndex = db.records.findIndex(r => 
-                        r.charId === newRecord.charId && 
-                        r.month === newRecord.month && 
-                        r.week === newRecord.week && 
-                        r.type === newRecord.type
-                    );
-
-                    if (existingIndex !== -1) {
-                        db.records[existingIndex] = newRecord;
-                    } else {
-                        db.records.push(newRecord);
-                    }
-                });
-
-                saveDB();
-                updateDashboard();
-                alert("Dados mesclados e salvos com sucesso! O histórico foi totalmente atualizado.");
-            } else {
-                alert("Arquivo inválido. A estrutura do JSON está incorreta.");
-            }
-        } catch (error) {
-            alert("Erro ao processar o arquivo JSON.");
+            const importedData = JSON.parse(e.target.result);
+            
+            // 1. Atualiza a variável global db
+            db = importedData;
+            
+            // 2. Salva no localStorage (para o site lembrar na próxima vez)
+            localStorage.setItem('nightCrowsDB', JSON.stringify(db));
+            
+            // 3. ATUALIZA A TELA (isso é o que faltava para aparecer)
+            updateDashboard();
+            
+            alert("Dados importados com sucesso!");
+        } catch (err) {
+            alert("Erro ao importar o arquivo: verifique se é um JSON válido.");
         }
     };
     reader.readAsText(file);
-    event.target.value = ''; 
 }
 
 document.addEventListener('DOMContentLoaded', init);    
