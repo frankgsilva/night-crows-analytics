@@ -541,17 +541,27 @@ function renderChart() {
 
 // --- 6. SEGURANÇA E BACKUP (EXPORTAÇÃO/IMPORTAÇÃO MESCLADA) ---
 function exportData() {
-    // Aqui garantimos que estamos pegando o objeto 'db' completo,
-    // que já contém o array 'records' com todos os tipos (morion e avulso)
-    // e todos os campos (diamonds, diamondsBruto, itemName, etc).
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+    // Forçamos a leitura do que está realmente gravado no navegador
+    const currentData = localStorage.getItem('nightCrowsDB');
+    
+    if (!currentData) {
+        alert("Nenhum dado encontrado para exportar.");
+        return;
+    }
+
+    // Criamos o blob com os dados frescos do storage
+    const blob = new Blob([currentData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     
     const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("href", url);
     downloadAnchorNode.setAttribute("download", `nightcrows_backup_${new Date().toISOString().slice(0,10)}.json`);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+    
+    // Limpa a URL temporária
+    URL.revokeObjectURL(url);
 }
 
 function importData(event) {
